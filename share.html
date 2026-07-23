@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Share Documents - Digital Document Locker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+        }
+
+        /* Navigation Bar */
+        nav {
+            background: white;
+            padding: 0 30px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        nav-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 70px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .nav-logo {
+            font-size: 28px;
+            font-weight: 700;
+            color: #667eea;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .nav-menu a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-menu a:hover,
+        .nav-menu a.active {
+            color: #667eea;
+        }
+
+        .nav-user {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 50px;
+            right: 0;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+            min-width: 200px;
+            display: none;
+        }
+
+        .dropdown-menu.show {
+            display: block;
+        }
+
+        .dropdown-menu a {
+            display: block;
+            padding: 12px 20px;
+            color: #333;
+            text-decoration: none;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background 0.3s ease;
+        }
+
+        .dropdown-menu a:hover {
+            background: #f5f7fa;
+            color: #667eea;
+        }
+
+        .logout-btn {
+            color: #e74c3c !important;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .page-header {
+            margin-bottom: 40px;
+        }
+
+        .page-header h1 {
+            color: #333;
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .page-header p {
+            color: #666;
+            font-size: 16px;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        /* Share Section */
+        .section {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .section h2 {
+            color: #333;
+            margin-bottom: 25px;
+            font-size: 22px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            color: #555;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: all 0.3s ease;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .share-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .share-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        /* Shared Documents List */
+        .shared-list {
+            display: grid;
+            gap: 15px;
+        }
+
+        .shared-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            transition: background 0.3s ease;
+        }
+
+        .shared-item:hover {
+            background: #f0f0f0;
+        }
+
+        .shared-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex: 1;
+        }
+
+        .shared-icon {
+            font-size: 32px;
+        }
+
+        .shared-details h4 {
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .shared-details p {
+            color: #999;
+            font-size: 13px;
+        }
+
+        .shared-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .unshare-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .unshare-btn:hover {
+            background: #c0392b;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+        }
+
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .empty-state h3 {
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .success-message,
+        .error-message {
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: none;
+            border-left: 4px solid;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            border-color: #28a745;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            border-color: #f5c6cb;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        @media (max-width: 968px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            .section {
+                padding: 20px;
+            }
+
+            .shared-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .shared-actions {
+                width: 100%;
+                margin-top: 15px;
+            }
+
+            .unshare-btn {
+                flex: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav>
+        <nav-content>
+            <a href="dashboard.html" class="nav-logo">🔐 DocLocker</a>
+            <ul class="nav-menu">
+                <li><a href="dashboard.html">📊 Dashboard</a></li>
+                <li><a href="documents.html">📄 Documents</a></li>
+                <li><a href="upload.html">📤 Upload</a></li>
+                <li><a href="share.html" class="active">🔗 Shared</a></li>
+            </ul>
+            <div class="nav-user">
+                <div class="user-avatar" id="userAvatar">
+                    <div class="dropdown-menu" id="dropdownMenu">
+                        <a href="profile.html">👤 Profile</a>
+                        <a href="settings.html">⚙️ Settings</a>
+                        <a href="#" id="logoutBtn" class="logout-btn">🚪 Logout</a>
+                    </div>
+                </div>
+            </div>
+        </nav-content>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="page-header">
+            <h1>🔗 Share Documents</h1>
+            <p>Manage document sharing and access control</p>
+        </div>
+
+        <div class="content-grid">
+            <!-- Share Document Section -->
+            <div class="section">
+                <h2>📤 Share a Document</h2>
+
+                <div class="success-message" id="successMessage">
+                    ✅ Document shared successfully!
+                </div>
+
+                <div class="error-message" id="errorMessage">
+                    ❌ Error sharing document
+                </div>
+
+                <form id="shareForm">
+                    <div class="form-group">
+                        <label for="documentSelect">Select Document</label>
+                        <select id="documentSelect" required>
+                            <option value="">Choose a document...</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="recipientEmail">Recipient Email</label>
+                        <input type="email" id="recipientEmail" placeholder="Enter recipient's email" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="accessLevel">Access Level</label>
+                        <select id="accessLevel" required>
+                            <option value="view">View Only</option>
+                            <option value="download">Download</option>
+                            <option value="edit">Edit (Coming Soon)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="expiryDate">Expiry Date (Optional)</label>
+                        <input type="date" id="expiryDate">
+                    </div>
+
+                    <button type="submit" class="share-btn">🔗 Share Document</button>
+                </form>
+            </div>
+
+            <!-- Shared Documents Section -->
+            <div class="section">
+                <h2>📋 Documents You've Shared</h2>
+
+                <div class="shared-list" id="sharedList">
+                    <div class="empty-state">
+                        <div class="empty-icon">🔒</div>
+                        <h3>No shared documents yet</h3>
+                        <p>Share your first document to get started</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Shared With Me Section -->
+        <div class="section">
+            <h2>📥 Documents Shared With Me</h2>
+
+            <div class="shared-list" id="sharedWithMeList">
+                <div class="empty-state">
+                    <div class="empty-icon">📭</div>
+                    <h3>No documents shared with you yet</h3>
+                    <p>Other users can share documents with you here</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.3.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.3.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.3.1/firebase-database.js"></script>
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyB9GQkXcqofbk5u3AoD-xYJKfs2dDsha2Y",
+            authDomain: "digital-decument-locker.firebaseapp.com",
+            projectId: "digital-decument-locker",
+            storageBucket: "digital-decument-locker.firebasestorage.app",
+            messagingSenderId: "850796229636",
+            appId: "1:850796229636:web:4930afb5cdd29c74ff7151",
+            databaseURL: "https://digital-decument-locker-default-rtdb.asia-southeast1.firebasedatabase.app",
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const database = firebase.database();
+
+        let currentUser = null;
+        let userDocuments = [];
+
+        // Check Authentication
+        auth.onAuthStateChanged((user) => {
+            if (!user) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            currentUser = user;
+            const initial = (user.displayName || 'U').charAt(0).toUpperCase();
+            document.getElementById('userAvatar').textContent = initial;
+
+            loadDocuments();
+            loadSharedDocuments();
+            loadSharedWithMe();
+        });
+
+        // Logout
+        document.getElementById('logoutBtn').addEventListener('click', (e) => {
+            e.preventDefault();
+            auth.signOut().then(() => {
+                window.location.href = 'index.html';
+            });
+        });
+
+        // Load User Documents
+        function loadDocuments() {
+            const documentsRef = database.ref('documents').orderByChild('userId').equalTo(currentUser.uid);
+
+            documentsRef.once('value', (snapshot) => {
+                const docs = snapshot.val();
+                const select = document.getElementById('documentSelect');
+                select.innerHTML = '<option value="">Choose a document...</option>';
+
+                if (docs) {
+                    userDocuments = Object.entries(docs).map(([id, doc]) => ({
+                        id,
+                        ...doc
+                    }));
+
+                    userDocuments.forEach(doc => {
+                        const option = document.createElement('option');
+                        option.value = doc.id;
+                        option.textContent = doc.fileName;
+                        select.appendChild(option);
+                    });
+                }
+            });
+        }
+
+        // Share Document
+        document.getElementById('shareForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const docId = document.getElementById('documentSelect').value;
+            const recipientEmail = document.getElementById('recipientEmail').value.trim();
+            const accessLevel = document.getElementById('accessLevel').value;
+            const expiryDate = document.getElementById('expiryDate').value;
+
+            if (!docId || !recipientEmail) {
+                showError('Please fill all required fields');
+                return;
+            }
+
+            try {
+                // Find recipient user
+                const usersRef = database.ref('users');
+                let recipientUid = null;
+
+                await usersRef.once('value', (snapshot) => {
+                    snapshot.forEach((child) => {
+                        if (child.val().email === recipientEmail) {
+                            recipientUid = child.key;
+                        }
+                    });
+                });
+
+                if (!recipientUid) {
+                    showError('Recipient email not found in system');
+                    return;
+                }
+
+                const shareId = database.ref('shares').push().key;
+                const doc = userDocuments.find(d => d.id === docId);
+
+                // Create share record
+                await database.ref('shares/' + shareId).set({
+                    shareId: shareId,
+                    documentId: docId,
+                    ownerId: currentUser.uid,
+                    recipientId: recipientUid,
+                    recipientEmail: recipientEmail,
+                    accessLevel: accessLevel,
+                    expiryDate: expiryDate || null,
+                    sharedAt: new Date().toISOString(),
+                    fileName: doc.fileName
+                });
+
+                showSuccess('Document shared successfully!');
+                setTimeout(() => {
+                    document.getElementById('shareForm').reset();
+                    loadSharedDocuments();
+                }, 1500);
+            } catch (error) {
+                showError('Error sharing document: ' + error.message);
+            }
+        });
+
+        // Load Shared Documents (Documents I've shared)
+        function loadSharedDocuments() {
+            const sharesRef = database.ref('shares').orderByChild('ownerId').equalTo(currentUser.uid);
+
+            sharesRef.once('value', (snapshot) => {
+                const shares = snapshot.val();
+                const container = document.getElementById('sharedList');
+
+                if (!shares) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-icon">🔒</div>
+                            <h3>No shared documents yet</h3>
+                            <p>Share your first document to get started</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = '';
+
+                Object.entries(shares).forEach(([shareId, share]) => {
+                    const sharedItem = document.createElement('div');
+                    sharedItem.className = 'shared-item';
+                    sharedItem.innerHTML = `
+                        <div class="shared-info">
+                            <div class="shared-icon">📄</div>
+                            <div class="shared-details">
+                                <h4>${share.fileName}</h4>
+                                <p>Shared with: ${share.recipientEmail}</p>
+                                <p>Access: ${share.accessLevel} • Shared: ${new Date(share.sharedAt).toLocaleDateString()}</p>
+                            </div>
+                        </div>
+                        <div class="shared-actions">
+                            <button class="unshare-btn" onclick="unshareDocument('${shareId}')">Revoke Access</button>
+                        </div>
+                    `;
+                    container.appendChild(sharedItem);
+                });
+            });
+        }
+
+        // Load Shared With Me
+        function loadSharedWithMe() {
+            const sharesRef = database.ref('shares').orderByChild('recipientId').equalTo(currentUser.uid);
+
+            sharesRef.once('value', (snapshot) => {
+                const shares = snapshot.val();
+                const container = document.getElementById('sharedWithMeList');
+
+                if (!shares) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-icon">📭</div>
+                            <h3>No documents shared with you yet</h3>
+                            <p>Other users can share documents with you here</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = '';
+
+                Object.entries(shares).forEach(([shareId, share]) => {
+                    const sharedItem = document.createElement('div');
+                    sharedItem.className = 'shared-item';
+                    sharedItem.innerHTML = `
+                        <div class="shared-info">
+                            <div class="shared-icon">📥</div>
+                            <div class="shared-details">
+                                <h4>${share.fileName}</h4>
+                                <p>Shared by: ${share.recipientEmail}</p>
+                                <p>Access: ${share.accessLevel} • Shared: ${new Date(share.sharedAt).toLocaleDateString()}</p>
+                            </div>
+                        </div>
+                        <div class="shared-actions">
+                            <button class="unshare-btn" onclick="alert('Visit documents page to view')">Open Document</button>
+                        </div>
+                    `;
+                    container.appendChild(sharedItem);
+                });
+            });
+        }
+
+        function unshareDocument(shareId) {
+            if (confirm('Are you sure you want to revoke access?')) {
+                database.ref('shares/' + shareId).remove().then(() => {
+                    showSuccess('Access revoked successfully');
+                    loadSharedDocuments();
+                }).catch(error => {
+                    showError('Error revoking access: ' + error.message);
+                });
+            }
+        }
+
+        function showSuccess(message) {
+            const el = document.getElementById('successMessage');
+            el.textContent = '✅ ' + message;
+            el.classList.add('show');
+            setTimeout(() => el.classList.remove('show'), 3000);
+        }
+
+        function showError(message) {
+            const el = document.getElementById('errorMessage');
+            el.textContent = '❌ ' + message;
+            el.classList.add('show');
+            setTimeout(() => el.classList.remove('show'), 3000);
+        }
+
+        // User Avatar Dropdown
+        document.getElementById('userAvatar').addEventListener('click', (e) => {
+            e.stopPropagation();
+            const dropdown = document.getElementById('dropdownMenu');
+            dropdown.classList.toggle('show');
+        });
+
+        document.addEventListener('click', () => {
+            document.getElementById('dropdownMenu').classList.remove('show');
+        });
+    </script>
+</body>
+</html>

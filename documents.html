@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documents - Digital Document Locker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+        }
+
+        /* Navigation Bar */
+        nav {
+            background: white;
+            padding: 0 30px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        nav-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 70px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .nav-logo {
+            font-size: 28px;
+            font-weight: 700;
+            color: #667eea;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .nav-menu a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-menu a:hover,
+        .nav-menu a.active {
+            color: #667eea;
+        }
+
+        .nav-user {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 50px;
+            right: 0;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+            min-width: 200px;
+            display: none;
+        }
+
+        .dropdown-menu.show {
+            display: block;
+        }
+
+        .dropdown-menu a {
+            display: block;
+            padding: 12px 20px;
+            color: #333;
+            text-decoration: none;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background 0.3s ease;
+        }
+
+        .dropdown-menu a:hover {
+            background: #f5f7fa;
+            color: #667eea;
+        }
+
+        .logout-btn {
+            color: #e74c3c !important;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .page-header {
+            margin-bottom: 40px;
+        }
+
+        .page-header h1 {
+            color: #333;
+            font-size: 32px;
+            margin-bottom: 20px;
+        }
+
+        /* Filters and Search */
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 40px 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+        }
+
+        .filter-select {
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .sort-select {
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .sort-select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        /* Documents Grid */
+        .documents-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .document-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .document-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .document-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 30px 20px;
+            text-align: center;
+            color: white;
+        }
+
+        .document-icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+
+        .document-card h3 {
+            color: white;
+            font-size: 16px;
+            word-break: break-word;
+            line-height: 1.4;
+        }
+
+        .document-body {
+            padding: 20px;
+        }
+
+        .doc-meta {
+            margin-bottom: 15px;
+            font-size: 13px;
+        }
+
+        .doc-size {
+            color: #999;
+            margin-bottom: 8px;
+        }
+
+        .doc-date {
+            color: #999;
+            margin-bottom: 8px;
+        }
+
+        .doc-category {
+            display: inline-block;
+            background: #f0f0f0;
+            color: #667eea;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .doc-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 15px;
+            border-top: 1px solid #f0f0f0;
+            padding-top: 15px;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 8px;
+            border: none;
+            border-radius: 5px;
+            background: #667eea;
+            color: white;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .action-btn:hover {
+            background: #764ba2;
+        }
+
+        .delete-btn {
+            background: #e74c3c;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .empty-state-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+
+        .empty-state h3 {
+            color: #666;
+            margin-bottom: 10px;
+            font-size: 20px;
+        }
+
+        .empty-state p {
+            color: #999;
+            margin-bottom: 20px;
+        }
+
+        .upload-link {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 5px;
+            text-decoration: none;
+            display: inline-block;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .upload-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        @media (max-width: 768px) {
+            .controls {
+                flex-direction: column;
+            }
+
+            .search-box {
+                min-width: 100%;
+            }
+
+            .documents-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav>
+        <nav-content>
+            <a href="dashboard.html" class="nav-logo">🔐 DocLocker</a>
+            <ul class="nav-menu">
+                <li><a href="dashboard.html">📊 Dashboard</a></li>
+                <li><a href="documents.html" class="active">📄 Documents</a></li>
+                <li><a href="upload.html">📤 Upload</a></li>
+                <li><a href="share.html">🔗 Shared</a></li>
+            </ul>
+            <div class="nav-user">
+                <div class="user-avatar" id="userAvatar">
+                    <div class="dropdown-menu" id="dropdownMenu">
+                        <a href="profile.html">👤 Profile</a>
+                        <a href="settings.html">⚙️ Settings</a>
+                        <a href="#" id="logoutBtn" class="logout-btn">🚪 Logout</a>
+                    </div>
+                </div>
+            </div>
+        </nav-content>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="page-header">
+            <h1>📄 My Documents</h1>
+        </div>
+
+        <!-- Controls -->
+        <div class="controls">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Search documents...">
+                <span class="search-icon">🔍</span>
+            </div>
+            <select class="filter-select" id="categoryFilter">
+                <option value="">All Categories</option>
+                <option value="Personal">Personal</option>
+                <option value="Financial">Financial</option>
+                <option value="Legal">Legal</option>
+                <option value="Medical">Medical</option>
+                <option value="Work">Work</option>
+                <option value="Education">Education</option>
+                <option value="Other">Other</option>
+            </select>
+            <select class="sort-select" id="sortBy">
+                <option value="newest">Newest First</option>
+                <option value="oldest">Oldest First</option>
+                <option value="name">Name (A-Z)</option>
+                <option value="size">Largest First</option>
+            </select>
+        </div>
+
+        <!-- Documents Grid -->
+        <div class="documents-grid" id="documentsContainer">
+            <div class="empty-state">
+                <div class="empty-state-icon">📭</div>
+                <h3>No documents found</h3>
+                <p>Start by uploading your first document</p>
+                <a href="upload.html" class="upload-link">📤 Upload Document</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.3.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.3.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.3.1/firebase-database.js"></script>
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyB9GQkXcqofbk5u3AoD-xYJKfs2dDsha2Y",
+            authDomain: "digital-decument-locker.firebaseapp.com",
+            projectId: "digital-decument-locker",
+            storageBucket: "digital-decument-locker.firebasestorage.app",
+            messagingSenderId: "850796229636",
+            appId: "1:850796229636:web:4930afb5cdd29c74ff7151",
+            databaseURL: "https://digital-decument-locker-default-rtdb.asia-southeast1.firebasedatabase.app",
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const database = firebase.database();
+
+        let currentUser = null;
+        let allDocuments = [];
+
+        // Check Authentication
+        auth.onAuthStateChanged((user) => {
+            if (!user) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            currentUser = user;
+            const initial = (user.displayName || 'U').charAt(0).toUpperCase();
+            document.getElementById('userAvatar').textContent = initial;
+
+            loadDocuments();
+        });
+
+        // Logout
+        document.getElementById('logoutBtn').addEventListener('click', (e) => {
+            e.preventDefault();
+            auth.signOut().then(() => {
+                window.location.href = 'index.html';
+            });
+        });
+
+        // Load Documents
+        async function loadDocuments() {
+            const documentsRef = database.ref('documents').orderByChild('userId').equalTo(currentUser.uid);
+
+            documentsRef.once('value', (snapshot) => {
+                const docs = snapshot.val();
+
+                if (!docs) {
+                    displayEmptyState();
+                    return;
+                }
+
+                allDocuments = Object.entries(docs).map(([id, doc]) => ({
+                    id,
+                    ...doc
+                }));
+
+                displayDocuments(allDocuments);
+            });
+        }
+
+        // Display Documents
+        function displayDocuments(documents) {
+            const container = document.getElementById('documentsContainer');
+
+            if (documents.length === 0) {
+                displayEmptyState();
+                return;
+            }
+
+            container.innerHTML = '';
+
+            documents.forEach(doc => {
+                const uploadDate = new Date(doc.uploadedAt);
+                const icon = getDocumentIcon(doc.fileName);
+
+                const card = document.createElement('div');
+                card.className = 'document-card';
+                card.innerHTML = `
+                    <div class="document-header">
+                        <div class="document-icon">${icon}</div>
+                        <h3 title="${doc.fileName}">${doc.fileName}</h3>
+                    </div>
+                    <div class="document-body">
+                        <div class="doc-meta">
+                            <div class="doc-size">📦 ${formatBytes(doc.fileSize)}</div>
+                            <div class="doc-date">📅 ${uploadDate.toLocaleDateString()}</div>
+                            <span class="doc-category">${doc.category || 'Uncategorized'}</span>
+                        </div>
+                        <div class="doc-actions">
+                            <button class="action-btn" onclick="previewDocument('${doc.id}', '${doc.fileUrl}')">Preview</button>
+                            <button class="action-btn" onclick="downloadDocument('${doc.id}', '${doc.fileName}', '${doc.fileUrl}')">Download</button>
+                            <button class="action-btn delete-btn" onclick="deleteDocument('${doc.id}')">Delete</button>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function displayEmptyState() {
+            const container = document.getElementById('documentsContainer');
+            container.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-state-icon">📭</div>
+                    <h3>No documents found</h3>
+                    <p>Start by uploading your first document</p>
+                    <a href="upload.html" class="upload-link">📤 Upload Document</a>
+                </div>
+            `;
+        }
+
+        // Search
+        document.getElementById('searchInput').addEventListener('input', filterDocuments);
+
+        // Filter
+        document.getElementById('categoryFilter').addEventListener('change', filterDocuments);
+
+        // Sort
+        document.getElementById('sortBy').addEventListener('change', filterDocuments);
+
+        function filterDocuments() {
+            let filtered = allDocuments;
+
+            // Search filter
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            if (searchTerm) {
+                filtered = filtered.filter(doc =>
+                    doc.fileName.toLowerCase().includes(searchTerm) ||
+                    (doc.title && doc.title.toLowerCase().includes(searchTerm)) ||
+                    (doc.description && doc.description.toLowerCase().includes(searchTerm))
+                );
+            }
+
+            // Category filter
+            const category = document.getElementById('categoryFilter').value;
+            if (category) {
+                filtered = filtered.filter(doc => doc.category === category);
+            }
+
+            // Sort
+            const sortBy = document.getElementById('sortBy').value;
+            filtered.sort((a, b) => {
+                switch (sortBy) {
+                    case 'oldest':
+                        return new Date(a.uploadedAt) - new Date(b.uploadedAt);
+                    case 'name':
+                        return a.fileName.localeCompare(b.fileName);
+                    case 'size':
+                        return b.fileSize - a.fileSize;
+                    case 'newest':
+                    default:
+                        return new Date(b.uploadedAt) - new Date(a.uploadedAt);
+                }
+            });
+
+            displayDocuments(filtered);
+        }
+
+        function getDocumentIcon(fileName) {
+            const ext = fileName.split('.').pop().toLowerCase();
+            const icons = {
+                'pdf': '📕', 'doc': '📄', 'docx': '📄', 'xls': '📊', 'xlsx': '📊',
+                'ppt': '🎯', 'pptx': '🎯', 'txt': '📝', 'jpg': '🖼️', 'jpeg': '🖼️',
+                'png': '🖼️', 'zip': '📦', 'rar': '📦'
+            };
+            return icons[ext] || '📄';
+        }
+
+        function formatBytes(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i];
+        }
+
+        function previewDocument(docId, fileUrl) {
+            window.open(fileUrl, '_blank');
+        }
+
+        function downloadDocument(docId, fileName, fileUrl) {
+            const a = document.createElement('a');
+            a.href = fileUrl;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+
+        function deleteDocument(docId) {
+            if (confirm('Are you sure you want to delete this document?')) {
+                database.ref('documents/' + docId).remove().then(() => {
+                    alert('Document deleted successfully');
+                    loadDocuments();
+                }).catch(error => {
+                    alert('Error deleting document: ' + error.message);
+                });
+            }
+        }
+
+        // User Avatar Dropdown
+        document.getElementById('userAvatar').addEventListener('click', (e) => {
+            e.stopPropagation();
+            const dropdown = document.getElementById('dropdownMenu');
+            dropdown.classList.toggle('show');
+        });
+
+        document.addEventListener('click', () => {
+            document.getElementById('dropdownMenu').classList.remove('show');
+        });
+    </script>
+</body>
+</html>

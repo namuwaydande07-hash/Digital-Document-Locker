@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Digital Document Locker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+        }
+
+        /* Navigation Bar */
+        nav {
+            background: white;
+            padding: 0 30px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        nav-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 70px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .nav-logo {
+            font-size: 28px;
+            font-weight: 700;
+            color: #667eea;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .nav-menu a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-menu a:hover,
+        .nav-menu a.active {
+            color: #667eea;
+        }
+
+        .nav-user {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 50px;
+            right: 0;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+            min-width: 200px;
+            display: none;
+        }
+
+        .dropdown-menu.show {
+            display: block;
+        }
+
+        .dropdown-menu a {
+            display: block;
+            padding: 12px 20px;
+            color: #333;
+            text-decoration: none;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background 0.3s ease;
+        }
+
+        .dropdown-menu a:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown-menu a:hover {
+            background: #f5f7fa;
+            color: #667eea;
+        }
+
+        .logout-btn {
+            color: #e74c3c !important;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .welcome-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 10px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+
+        .welcome-section h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .welcome-section p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .stat-icon {
+            font-size: 40px;
+            margin-bottom: 15px;
+        }
+
+        .stat-number {
+            font-size: 32px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 40px;
+        }
+
+        .action-btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        .btn-secondary:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .recent-documents {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .recent-documents h2 {
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 24px;
+        }
+
+        .document-list {
+            display: grid;
+            gap: 15px;
+        }
+
+        .document-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            transition: background 0.3s ease;
+            border-left: 4px solid #667eea;
+        }
+
+        .document-item:hover {
+            background: #f0f0f0;
+        }
+
+        .document-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex: 1;
+        }
+
+        .document-icon {
+            font-size: 32px;
+        }
+
+        .document-details h3 {
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .document-details p {
+            color: #999;
+            font-size: 14px;
+        }
+
+        .document-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .document-actions button {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            background: #667eea;
+            color: white;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .document-actions button:hover {
+            background: #764ba2;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .empty-state-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+
+        .empty-state h3 {
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 768px) {
+            nav-content {
+                flex-direction: column;
+                height: auto;
+                padding: 15px 0;
+            }
+
+            .nav-menu {
+                flex-direction: column;
+                gap: 15px;
+                width: 100%;
+            }
+
+            .welcome-section {
+                padding: 25px;
+            }
+
+            .welcome-section h1 {
+                font-size: 24px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .document-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav>
+        <nav-content>
+            <a href="dashboard.html" class="nav-logo">🔐 DocLocker</a>
+            <ul class="nav-menu">
+                <li><a href="dashboard.html" class="active">📊 Dashboard</a></li>
+                <li><a href="documents.html">📄 Documents</a></li>
+                <li><a href="upload.html">📤 Upload</a></li>
+                <li><a href="share.html">🔗 Shared</a></li>
+            </ul>
+            <div class="nav-user">
+                <div class="user-avatar" id="userAvatar">
+                    <div class="dropdown-menu" id="dropdownMenu">
+                        <a href="profile.html">👤 Profile</a>
+                        <a href="settings.html">⚙️ Settings</a>
+                        <a href="#" id="logoutBtn" class="logout-btn">🚪 Logout</a>
+                    </div>
+                </div>
+            </div>
+        </nav-content>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Welcome Section -->
+        <div class="welcome-section">
+            <h1>Welcome, <span id="userName">User</span>!</h1>
+            <p>Your secure document storage dashboard</p>
+        </div>
+
+        <!-- Statistics -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">📄</div>
+                <div class="stat-number" id="docCount">0</div>
+                <div class="stat-label">Total Documents</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">💾</div>
+                <div class="stat-number" id="storageUsed">0 MB</div>
+                <div class="stat-label">Storage Used</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🔗</div>
+                <div class="stat-number" id="sharedCount">0</div>
+                <div class="stat-label">Shared Documents</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">⏰</div>
+                <div class="stat-number" id="recentCount">0</div>
+                <div class="stat-label">Recent Uploads</div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <a href="upload.html" class="action-btn btn-primary">
+                📤 Upload Document
+            </a>
+            <a href="documents.html" class="action-btn btn-secondary">
+                📄 View All Documents
+            </a>
+            <a href="share.html" class="action-btn btn-secondary">
+                🔗 Manage Sharing
+            </a>
+            <a href="settings.html" class="action-btn btn-secondary">
+                ⚙️ Account Settings
+            </a>
+        </div>
+
+        <!-- Recent Documents -->
+        <div class="recent-documents">
+            <h2>📋 Recent Documents</h2>
+            <div id="recentDocsList" class="document-list">
+                <div class="empty-state">
+                    <div class="empty-state-icon">📭</div>
+                    <h3>No documents yet</h3>
+                    <p>Upload your first document to get started</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.3.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.3.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.3.1/firebase-database.js"></script>
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyB9GQkXcqofbk5u3AoD-xYJKfs2dDsha2Y",
+            authDomain: "digital-decument-locker.firebaseapp.com",
+            projectId: "digital-decument-locker",
+            storageBucket: "digital-decument-locker.firebasestorage.app",
+            messagingSenderId: "850796229636",
+            appId: "1:850796229636:web:4930afb5cdd29c74ff7151",
+            databaseURL: "https://digital-decument-locker-default-rtdb.asia-southeast1.firebasedatabase.app",
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const database = firebase.database();
+
+        let currentUser = null;
+
+        // Check Authentication
+        auth.onAuthStateChanged(async (user) => {
+            if (!user) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            currentUser = user;
+            document.getElementById('userName').textContent = user.displayName || 'User';
+
+            // Set avatar initial
+            const initial = (user.displayName || 'U').charAt(0).toUpperCase();
+            document.getElementById('userAvatar').textContent = initial;
+
+            // Load user statistics
+            loadDashboardStats(user.uid);
+            loadRecentDocuments(user.uid);
+        });
+
+        // User Avatar Dropdown
+        document.getElementById('userAvatar').addEventListener('click', (e) => {
+            e.stopPropagation();
+            const dropdown = document.getElementById('dropdownMenu');
+            dropdown.classList.toggle('show');
+        });
+
+        document.addEventListener('click', () => {
+            document.getElementById('dropdownMenu').classList.remove('show');
+        });
+
+        // Logout
+        document.getElementById('logoutBtn').addEventListener('click', (e) => {
+            e.preventDefault();
+            auth.signOut().then(() => {
+                window.location.href = 'index.html';
+            });
+        });
+
+        // Load Dashboard Statistics
+        async function loadDashboardStats(uid) {
+            const userRef = database.ref('users/' + uid);
+            const documentsRef = database.ref('documents').orderByChild('userId').equalTo(uid);
+
+            userRef.once('value', (snapshot) => {
+                const userData = snapshot.val();
+                if (userData) {
+                    document.getElementById('storageUsed').textContent = 
+                        formatBytes(userData.storageUsed || 0);
+                }
+            });
+
+            documentsRef.once('value', (snapshot) => {
+                const docs = snapshot.val();
+                const docCount = docs ? Object.keys(docs).length : 0;
+                document.getElementById('docCount').textContent = docCount;
+
+                let sharedCount = 0;
+                let recentCount = 0;
+
+                if (docs) {
+                    Object.values(docs).forEach(doc => {
+                        if (doc.isShared) sharedCount++;
+                        const uploadTime = new Date(doc.uploadedAt);
+                        const dayAgo = new Date(Date.now() - 86400000);
+                        if (uploadTime > dayAgo) recentCount++;
+                    });
+                }
+
+                document.getElementById('sharedCount').textContent = sharedCount;
+                document.getElementById('recentCount').textContent = recentCount;
+            });
+        }
+
+        // Load Recent Documents
+        async function loadRecentDocuments(uid) {
+            const documentsRef = database.ref('documents').orderByChild('userId').equalTo(uid);
+
+            documentsRef.limitToLast(5).once('value', (snapshot) => {
+                const docs = snapshot.val();
+                const container = document.getElementById('recentDocsList');
+
+                if (!docs) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">📭</div>
+                            <h3>No documents yet</h3>
+                            <p>Upload your first document to get started</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = '';
+                const docArray = Object.entries(docs).reverse();
+
+                docArray.slice(0, 5).forEach(([docId, doc]) => {
+                    const uploadDate = new Date(doc.uploadedAt);
+                    const formattedDate = uploadDate.toLocaleDateString() + ' ' + 
+                                         uploadDate.toLocaleTimeString();
+                    
+                    const icon = getDocumentIcon(doc.fileName);
+
+                    container.innerHTML += `
+                        <div class="document-item">
+                            <div class="document-info">
+                                <div class="document-icon">${icon}</div>
+                                <div class="document-details">
+                                    <h3>${doc.fileName}</h3>
+                                    <p>${formatBytes(doc.fileSize)} • ${formattedDate}</p>
+                                </div>
+                            </div>
+                            <div class="document-actions">
+                                <button onclick="downloadDocument('${docId}', '${doc.fileName}')">Download</button>
+                                <button onclick="deleteDocument('${docId}')">Delete</button>
+                            </div>
+                        </div>
+                    `;
+                });
+            });
+        }
+
+        function getDocumentIcon(fileName) {
+            const ext = fileName.split('.').pop().toLowerCase();
+            const icons = {
+                'pdf': '📕', 'doc': '📄', 'docx': '📄', 'xls': '📊', 'xlsx': '📊',
+                'ppt': '🎯', 'pptx': '🎯', 'txt': '📝', 'jpg': '🖼️', 'jpeg': '🖼️',
+                'png': '🖼️', 'zip': '📦', 'rar': '📦'
+            };
+            return icons[ext] || '📄';
+        }
+
+        function formatBytes(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i];
+        }
+
+        function downloadDocument(docId, fileName) {
+            alert('Download feature coming soon!');
+        }
+
+        function deleteDocument(docId) {
+            if (confirm('Are you sure you want to delete this document?')) {
+                database.ref('documents/' + docId).remove().then(() => {
+                    alert('Document deleted successfully');
+                    location.reload();
+                });
+            }
+        }
+
+        // Set active menu item
+        const currentPage = window.location.pathname.split('/').pop();
+        document.querySelectorAll('.nav-menu a').forEach(link => {
+            if (link.getAttribute('href') === currentPage) {
+                link.classList.add('active');
+            } else {
+                link.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>
