@@ -516,6 +516,29 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
     <script>
+
+        const logoutBtn = document.getElementById("logoutBtn");
+
+logoutBtn.addEventListener("click", () => {
+
+    signOut(auth)
+        .then(() => {
+
+            // Remove any saved data
+            localStorage.clear();
+            sessionStorage.clear();
+
+            alert("Logged out successfully!");
+
+            // Go back to login page
+            window.location.href = "index.html";
+
+        })
+        .catch((error) => {
+            alert(error.message);
+        });
+
+});
         // Firebase Configuration
         const firebaseConfig = {
             apiKey: "AIzaSyB9GQkXcqofbk5u3AoD-xYJKfs2dDsha2Y",
